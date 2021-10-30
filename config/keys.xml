@@ -1,0 +1,8 @@
+<keys>
+    <key action="left">a</key>
+    <key action="right">d</key>
+    <key action="down">s</key>
+    <key action="up">w</key>
+    <key action="pause">escape</key>
+    <key action="undo">z</key>
+</keys>

@@ -1,0 +1,26 @@
+; Basic
+P = Player
+X = box spot
+B = Box
+E = Empty
+W = Wall
+
+; Teleport variant
+T = Teleport
+
+; Conveyor belt variant
+C = Conveyor belt (always right)
+
+; Hole variant
+H = Hole
+
+; Duo player variant
+p = player 2
+
+; Bot variant
+Y = bot
+
+; Switch variant
+S = Switch
+G = Gate
+
