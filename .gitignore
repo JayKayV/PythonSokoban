@@ -1,1 +1,6 @@
+#to ignore pycharm
 .idea
+
+#ignore pyc and pycache
+__pycache__
+*.pyc
