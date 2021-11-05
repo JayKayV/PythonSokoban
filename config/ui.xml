@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--
-#todo
-update xml with scene data
--->
 <ui>
     <scene name="game">
-        <Button background="None" font="fonts/OpenSans-Regular.ttf" font-size="16" color="white"
+        <button background="None" font="fonts/OpenSans-Regular.ttf" font-size="16" color="white"
                 x="20" y="20" width="0" height="0" name="test" type="text"
                 hover-background="None" hover-text="red">Click me!
-        </Button>
+        </button>
     </scene>
 </ui>
