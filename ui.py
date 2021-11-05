@@ -1,5 +1,6 @@
 import pygame, helper
 from helper import color as hc
+import xml.etree.ElementTree as et
 pygame.init()
 from uiBase import Button, UiObj
 
@@ -8,7 +9,6 @@ ImgButton can also implement as StaticImg (i.e just leave hover_img = 'None'
 when doing so, blitting ImgButton will only display surf
 The same can be said for TextButton 
 """
-
 
 class ImgButton(Button):
     def __init__(self, pos, size, name, img, hover_img = "None"):
@@ -41,7 +41,7 @@ class TextButton(Button):
         self.text = text
 
         self.gamefont = pygame.font.Font(self.font, font_size)
-        self.textimg = self.gamefont.render(self.text, 1, hc[color])
+        self.textimg = self.gamefont.render(self.text, 1, hc[self.color])
 
         #calc for auto align center
         textsize = self.gamefont.size(self.text)
@@ -50,13 +50,13 @@ class TextButton(Button):
                 self.size = textsize
             else:
                 self.size = pygame.image.load(self.bck_grnd).get_size()
-        textpos = helper.aligncenter(self.size, textsize)
+        self.textpos = helper.aligncenter(self.size, textsize)
         self.surf = pygame.Surface(self.size)
 
         if self.bck_grnd != "None":
             bck_surf = pygame.image.load(self.bck_grnd)
             self.surf.blit(bck_surf, (0, 0))
-        self.surf.blit(self.textimg, textpos)
+        self.surf.blit(self.textimg, self.textpos)
 
         #for hover
         if hover_background != "None":
@@ -66,7 +66,7 @@ class TextButton(Button):
             self.hoverSurf.blit(hover_surf, (0, 0))
         if hover_color != "None":
             self.canHover = True
-            hover_textimg = self.gamefont.render(self.text, 1, hc[hover_color])
+            hover_textimg = self.gamefont.render(self.text, 1, hc[self.hover_color])
             if hover_background == "None":
                 self.hoverSurf = self.surf.copy()
                 self.hoverSurf.blit(hover_textimg, textpos)
@@ -95,10 +95,16 @@ class TextButton(Button):
             func(*args)
 
 class UpdateableText(TextButton):
-    #todo here
-    #update surf
+    def set(self, static_text, var_text):
+        self.static_text = static_text
+        self.var_text = var_text
+
+        text = self.static_text.format(self.var_text)
+        self.textimg = self.gamefont.render(text, 1, self.color)
+        self.surf.blit(self.textimg, self.textpos)
+
     def update(self, new_value):
-        self.text = new_value
+        self.set(self, self.static_text, new_value)
 
 class KeyInput(UiObj):
     isActive = False
@@ -112,6 +118,32 @@ class KeyInput(UiObj):
         static = xml_obj[0]
         update = xml_obj[1]
         return KeyInput(static, update)
+
+def parseScene(scene_name):
+    xml_path = 'config/xml'
+    root = et.parse(xml_path).getroot()
+    scene = root.find('./scene[@name=\'{}\']'.format(scene_name))
+    if scene is None:
+        raise ValueError('scene name: {} doesn\'t exist in xml file'.format(scene_name))
+    objs = []
+    for o in scene:
+        if o.tag == 'Button':
+            if o.attrib['type'] == 'text':
+                objs.append(TextButton.loadFromXml(o))
+            elif o.attrib['type'] == 'img':
+                objs.append(ImgButton.loadFromXml(o))
+            else:
+                raise ValueError('Button have wrong type')
+        elif o.tag == 'text':
+            if o.attrib['type'] == 'updateable':
+                objs.append(UpdateableText.loadFromXml(o))
+            elif o.attrib['type'] == 'static':
+                objs.append(TextButton.loadFromXml(o))
+            else:
+                raise ValueError('Text have wrong type')
+    return objs
+
+
 
 
 

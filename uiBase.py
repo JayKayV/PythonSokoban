@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as et
+from datetime import datetime
 
 class UiObj:
     xmlObj = None
@@ -22,6 +23,25 @@ class UiObj:
     def loadFromXml(xml_obj):
         return "pls update this!"
 
+class Layer:
+    def __init__(self, scr_size):
+        if not isinstance(scr_size, tuple):
+            raise ValueError('Must initiaze scr_size')
+        elif not (isinstance(scr_size[0], int) and isinstance(scr_size[1], int)):
+            raise TypeError('Tuple must contain int type')
+
+        self.screensize = scr_size
+        self.oldtime = datetime.now()
+
+    def load(self):
+        return "pls update this!"
+
+    def update(self, actions):
+        return "pls update this!"
+
+    def blit(self):
+        return "pls update this!"
+
 
 class Button(UiObj):
     canHover = False
@@ -33,8 +53,11 @@ class Button(UiObj):
     def set_rect(self, scr):
         self.rect = scr.blit(self.surf, self.pos)
 
+    def collide(self, pos):
+        return self.rect.collidepoint(pos)
+
     def is_hover(self, mpos):
-        return self.rect.collidepoint(mpos) and self.canHover
+        return self.collide(mpos) and self.canHover
 
     def blit(self, mpos=(0, 0)):
         if self.is_hover(mpos):

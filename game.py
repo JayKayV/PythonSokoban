@@ -1,24 +1,20 @@
 import pygame, helper
 from scene import Scene
 from level import Level
+from uiBase import Layer
+from ui import *
 from datetime import timedelta, datetime
 pygame.init()
 
-class gameLayer:
+class GameLayer(Layer):
     levelmap = None
     player_pos = None
     gameStates = []
     otherScenes = None
-    gameUi = None #remember to set gameUi
+    ui = None
 
-    def __init__(self, scr_size):
-        if not isinstance(scr_size, tuple):
-            raise ValueError('Must initiaze scr_size')
-        elif not (isinstance(scr_size[0], int) and isinstance(scr_size[1], int)):
-            raise TypeError('Tuple must contain int type')
-
-        self.screensize = scr_size
-        self.oldtime = datetime.now()
+    def setUi(self, gameUi):
+        self.ui = gameUi
 
     def load(self, levelmap):
         self.sprites = {
@@ -137,7 +133,6 @@ class gameLayer:
             print(self.levelmap) #to debug
         return self.levelmap
 
-
     def blit(self):
         surf = pygame.Surface(self.screensize)
         surf.fill((0, 0, 0))
@@ -158,12 +153,33 @@ class gameLayer:
             i += 1
         return surf
 
+class UiLayer(Layer):
+    game = None
+
+    def load(self):
+        self.ui = parseScene('game')
+
+    def setGame(self, gameUi):
+        self.game = gameUi
+
+    def update(self, action):
+        if isinstance(action, tuple):
+            for o in self.ui:
+                o.onclick(sendAction, self.game, o.name)
+
+    def blit(self):
+        surf = pygame.Surface(self.screensize)
+        for o in self.ui:
+            surf.blit(o.surf, o.pos)
+        return surf
+
+
 class gameScene(Scene):
     def __init__(self, leveluri, levelid, screensize):
         super().__init__()
         level = Level()
         self.leveldata, self.levelmap = level.autoload(leveluri, levelid)
-        self.gameLayer = gameLayer(screensize)
+        self.gameLayer = GameLayer(screensize)
         self.gameLayer.load(self.levelmap)
 
         keys = helper.readKeyData()
@@ -186,5 +202,15 @@ class gameScene(Scene):
             self.uiLayer.update(mouse_pos)
         """
 
+def sendAction(*args):
+    if len(args) != 2:
+        raise KeyError('Need exacly two args')
+    else:
+        if not isinstance(args[0], GameLayer):
+            raise TypeError('first argument have to be game layer type')
+
+        if not isinstance(args[1], str):
+            raise TypeError('second argument have to specify action')
+        args[0].update(args[1])
 
 
