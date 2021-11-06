@@ -66,12 +66,12 @@ class TextButton(Button):
             self.hoverSurf.blit(hover_surf, (0, 0))
         if hover_color != "None":
             self.canHover = True
-            hover_textimg = self.gamefont.render(self.text, 1, hc[self.hover_color])
+            hover_textimg = self.gamefont.render(self.text, 1, hc[hover_color])
             if hover_background == "None":
                 self.hoverSurf = self.surf.copy()
-                self.hoverSurf.blit(hover_textimg, textpos)
+                self.hoverSurf.blit(hover_textimg, self.textpos)
             else:
-                self.hoverSurf.blit(hover_textimg, textpos)
+                self.hoverSurf.blit(hover_textimg, self.textpos)
 
     @staticmethod
     def loadFromXml(xml_obj):
@@ -120,14 +120,14 @@ class KeyInput(UiObj):
         return KeyInput(static, update)
 
 def parseScene(scene_name):
-    xml_path = 'config/xml'
+    xml_path = 'config/ui.xml'
     root = et.parse(xml_path).getroot()
     scene = root.find('./scene[@name=\'{}\']'.format(scene_name))
     if scene is None:
         raise ValueError('scene name: {} doesn\'t exist in xml file'.format(scene_name))
     objs = []
     for o in scene:
-        if o.tag == 'Button':
+        if o.tag == 'button':
             if o.attrib['type'] == 'text':
                 objs.append(TextButton.loadFromXml(o))
             elif o.attrib['type'] == 'img':
@@ -141,6 +141,8 @@ def parseScene(scene_name):
                 objs.append(TextButton.loadFromXml(o))
             else:
                 raise ValueError('Text have wrong type')
+    for o in objs:
+        o.rect = pygame.rect.Rect((o.pos, o.size))
     return objs
 
 

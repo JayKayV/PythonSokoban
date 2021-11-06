@@ -39,7 +39,7 @@ class Layer:
     def update(self, actions):
         return "pls update this!"
 
-    def blit(self):
+    def blit(self, surf=None):
         return "pls update this!"
 
 

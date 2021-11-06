@@ -6,6 +6,19 @@ from ui import *
 from datetime import timedelta, datetime
 pygame.init()
 
+def get_direction(vec):
+    if vec[0] == 0:
+        if vec[1] == 1:
+            return 'right'
+        else:
+            return 'left'
+    else:
+        if vec[0] == -1:
+            return 'up'
+        else:
+            return 'down'
+    return 'error'
+
 class GameLayer(Layer):
     levelmap = None
     player_pos = None
@@ -13,17 +26,28 @@ class GameLayer(Layer):
     otherScenes = None
     ui = None
 
+    def __init__(self, scr_size):
+        super().__init__(scr_size)
+        self.direction = [1, 0]
+        self.gameOver = False
+        self.moves = 0
+
     def setUi(self, gameUi):
         self.ui = gameUi
 
     def load(self, levelmap):
         self.sprites = {
-            'P': pygame.image.load('sprites/dummy.png').convert_alpha(),
+            'P': {'up': pygame.image.load('sprites/up.png').convert_alpha(),
+                  'down': pygame.image.load('sprites/down.png').convert_alpha(),
+                  'left': pygame.image.load('sprites/left.png').convert_alpha(),
+                  'right': pygame.image.load('sprites/right.png').convert_alpha()
+                  },
             'B': pygame.image.load('sprites/box_0.png').convert_alpha(),
             'W': pygame.image.load('sprites/wall.png').convert_alpha(),
-            'X': pygame.image.load('sprites/red_point.png').convert_alpha(),
+            'X': pygame.image.load('sprites/point.png').convert_alpha(),
             'activated_box': pygame.image.load('sprites/box_1.png').convert_alpha(),
-            'H': pygame.image.load('sprites/hole32.png').convert_alpha()
+            'H': pygame.image.load('sprites/hole.png').convert_alpha(),
+            'E': pygame.image.load('sprites/space.png').convert_alpha()
         }
 
         #load game logic data
@@ -56,6 +80,8 @@ class GameLayer(Layer):
         return True
 
     def update(self, actions):
+        if self.gameOver:
+            pass
         mapupdated = False
         updated = False
         for action in actions:
@@ -70,30 +96,29 @@ class GameLayer(Layer):
                     self.find_player()
 
                     updated = True
+                    self.moves -= 1
             else:
                 now = datetime.now()
                 dt = now - self.oldtime
                 self.oldtime = now
 
                 if dt >= timedelta(milliseconds=20):
-                    new_pos = None
-                    #0: right, 1: down, 2: left, 3: up
-                    direction = [0, 1]
                     if action == "right" and not updated:
+                        self.direction = [0, 1]
                         updated = True
                     elif action == "down" and not updated:
-                        direction = [1, 0]
+                        self.direction = [1, 0]
                         updated = True
                     elif action == "left" and not updated:
-                        direction = [0, -1]
+                        self.direction = [0, -1]
                         updated = True
                     elif action == "up" and not updated:
-                        direction = [-1, 0]
+                        self.direction = [-1, 0]
                         updated = True
                     else:
                         raise ValueError('action is not specified(action_name: {})'.format(action))
 
-                    new_pos = helper.add(self.player_pos, direction)
+                    new_pos = helper.add(self.player_pos, self.direction)
                     new_pos_data = helper.get_pos_data(self.levelmap, new_pos)
                     #print(new_pos)
                     if new_pos_data in ['E', 'X']:
@@ -107,7 +132,7 @@ class GameLayer(Layer):
 
                         mapupdated = True
                     elif new_pos_data == 'B':
-                        new_bpos = helper.add(new_pos, direction)
+                        new_bpos = helper.add(new_pos, self.direction)
                         new_bpos_data = helper.get_pos_data(self.levelmap, new_bpos)
 
                         if new_bpos_data in ['E', 'X', 'H']:
@@ -125,15 +150,19 @@ class GameLayer(Layer):
                     for pos in self.xpos:
                         if self.levelmap[pos[0]][pos[1]] == 'E':
                             helper.assign_lvlmap(self.levelmap, pos, 'X')
-                    if mapupdated and self.checkWinning():
-                        print('Winning!')
+                    self.gameOver = self.checkWinning()
+                    if mapupdated:
+                        self.moves += 1
+                        self.ui.update({'moves': self.moves})
+                        if self.gameOver:
+                            print('Winning!')
 
         if mapupdated:
             self.gameStates.append(self.levelmap.copy())
-            print(self.levelmap) #to debug
+            #print(self.levelmap) #to debug
         return self.levelmap
 
-    def blit(self):
+    def blit(self, surf=None):
         surf = pygame.Surface(self.screensize)
         surf.fill((0, 0, 0))
 
@@ -141,9 +170,13 @@ class GameLayer(Layer):
         for row in self.levelmap:
             j = 0
             for o in row:
-                pos = (32 * j + 10, 32 * i + 10)
-                if o != 'E' and o != 'B':
-                    surf.blit(self.sprites[o], pos)
+                pos = (64 * j + 100, 64 * i + 200)
+                if o != 'B' and o != 'e':
+                    if o == 'P':
+                        surf.blit(self.sprites['E'], pos)
+                        surf.blit(self.sprites[o][get_direction(self.direction)], pos)
+                    else:
+                        surf.blit(self.sprites[o], pos)
                 elif o == 'B':
                     if helper.get_pos_data(self.org_map, [i, j]) == 'X':
                         surf.blit(self.sprites['activated_box'], pos)
@@ -158,6 +191,7 @@ class UiLayer(Layer):
 
     def load(self):
         self.ui = parseScene('game')
+        print(self.ui)
 
     def setGame(self, gameUi):
         self.game = gameUi
@@ -165,14 +199,19 @@ class UiLayer(Layer):
     def update(self, action):
         if isinstance(action, tuple):
             for o in self.ui:
-                o.onclick(sendAction, self.game, o.name)
+                    o.onclick(action, sendAction, self.game, o.name)
+        elif isinstance(action, dict):
+            for o in self.ui:
+                if o.name in action:
+                    o.update(action[o.name])
+                    break
 
-    def blit(self):
-        surf = pygame.Surface(self.screensize)
+    def blit(self, surf):
         for o in self.ui:
-            surf.blit(o.surf, o.pos)
+            mpos = pygame.mouse.get_pos()
+            osurf, orect = o.blit(mpos)
+            surf.blit(osurf, orect)
         return surf
-
 
 class gameScene(Scene):
     def __init__(self, leveluri, levelid, screensize):
@@ -181,6 +220,11 @@ class gameScene(Scene):
         self.leveldata, self.levelmap = level.autoload(leveluri, levelid)
         self.gameLayer = GameLayer(screensize)
         self.gameLayer.load(self.levelmap)
+
+        self.uiLayer = UiLayer(screensize)
+        self.uiLayer.load()
+
+        self.gameLayer.setUi(self.uiLayer)
 
         keys = helper.readKeyData()
         self.game_keys = {pygame.key.key_code(keys[key]):key for key in keys}

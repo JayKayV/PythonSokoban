@@ -12,10 +12,15 @@ class Scene:
         self.next = nextScene
 
     def blit(self, screen):
+        scene_res = None
         if self.gameLayer is not None:
-            screen.blit(self.gameLayer.blit(), (0, 0))
-        if self.uiLayer is not None:
-            screen.blit(self.uiLayer.blit(), (0, 0))
+            scene_res = self.gameLayer.blit()
+            if self.uiLayer is not None:
+                scene_res = self.uiLayer.blit(scene_res)
+
+        if scene_res is None:
+            raise ValueError('pls have gameLayer or uiLayer in scene')
+        screen.blit(scene_res, (0, 0))
         """
         else:
             raise ValueError('UI LAYER CANNOT BE None!')
