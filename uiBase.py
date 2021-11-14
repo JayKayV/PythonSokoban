@@ -2,6 +2,7 @@ import xml.etree.ElementTree as et
 from datetime import datetime
 
 class UiObj:
+    visible = False
     xmlObj = None
 
     def __init__(self, pos, size, name):

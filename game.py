@@ -23,6 +23,7 @@ class GameLayer(Layer):
     levelmap = None
     player_pos = None
     gameStates = []
+    directionStates = []
     otherScenes = None
     ui = None
 
@@ -52,7 +53,9 @@ class GameLayer(Layer):
 
         #load game logic data
         self.levelmap = levelmap.split('*')
+        self.lvl_height, self.lvl_width = len(self.levelmap), len(self.levelmap[0])
         self.gameStates.append(self.levelmap.copy())
+        self.directionStates.append(self.direction.copy())
         self.org_map = self.levelmap.copy()
 
         self.xpos = []
@@ -81,17 +84,34 @@ class GameLayer(Layer):
 
     def update(self, actions):
         if self.gameOver:
-            pass
+            return 'None'
         mapupdated = False
         updated = False
         for action in actions:
-            if action == "undo" and not updated:
+            if action == 'reset' and not updated:
                 now = datetime.now()
                 dt = now - self.oldtime
                 self.oldtime = now
 
                 if dt >= timedelta(milliseconds=20) and len(self.gameStates) > 1:
+                    self.gameStates = [self.gameStates[0]]
+                    self.directionStates = [self.directionStates[0]]
+                    self.direction = self.directionStates[0].copy()
+                    self.levelmap = self.gameStates[-1].copy()
+                    self.find_player()
+
+                    updated = True
+                    self.moves = 0
+            elif action == "undo" and not updated:
+
+                now = datetime.now()
+                dt = now - self.oldtime
+                self.oldtime = now
+
+                if dt >= timedelta(milliseconds=20) and len(self.gameStates) > 1:
+                    self.directionStates.pop()
                     self.gameStates.pop()
+                    self.direction = self.directionStates[-1].copy()
                     self.levelmap = self.gameStates[-1].copy()
                     self.find_player()
 
@@ -155,10 +175,12 @@ class GameLayer(Layer):
                         self.moves += 1
                         self.ui.update({'moves': self.moves})
                         if self.gameOver:
+                            self.ui.update({'win': True})
                             print('Winning!')
 
         if mapupdated:
             self.gameStates.append(self.levelmap.copy())
+            self.directionStates.append(self.direction.copy())
             #print(self.levelmap) #to debug
         return self.levelmap
 
@@ -166,11 +188,13 @@ class GameLayer(Layer):
         surf = pygame.Surface(self.screensize)
         surf.fill((0, 0, 0))
 
+        left, top = helper.centralize(self.lvl_width, self.lvl_height)
+
         i = 0
         for row in self.levelmap:
             j = 0
             for o in row:
-                pos = (64 * j + 100, 64 * i + 200)
+                pos = (64 * j + 60 + left * 64, 64 * i + 60 + top * 64)
                 if o != 'B' and o != 'e':
                     if o == 'P':
                         surf.blit(self.sprites['E'], pos)
@@ -191,6 +215,7 @@ class UiLayer(Layer):
 
     def load(self):
         self.ui = parseScene('game')
+        self.updateTable = {'moves': 0, 'win': False}
         print(self.ui)
 
     def setGame(self, gameUi):
@@ -201,16 +226,16 @@ class UiLayer(Layer):
             for o in self.ui:
                     o.onclick(action, sendAction, self.game, o.name)
         elif isinstance(action, dict):
-            for o in self.ui:
-                if o.name in action:
-                    o.update(action[o.name])
-                    break
+            for o in action:
+                self.updateTable[o] = action[o]
+                #must guarantee that action contain the same key as in updateTable
 
     def blit(self, surf):
-        for o in self.ui:
+        for name in self.ui.keys():
             mpos = pygame.mouse.get_pos()
-            osurf, orect = o.blit(mpos)
-            surf.blit(osurf, orect)
+            if name != 'win-text' or (name == 'win-text' and self.updateTable['win']):
+                osurf, orect = self.ui[name].blit(mpos)
+                surf.blit(osurf, orect)
         return surf
 
 class gameScene(Scene):

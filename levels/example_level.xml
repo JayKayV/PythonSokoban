@@ -30,4 +30,18 @@
         <row>WEXHBEBEW</row>
         <row>WWWWWWWWW</row>
     </level>
+
+    <level id="-5" width="10" height="10">
+        <row>WWWWWWWWWW</row>
+        <row>WPEEEEEEWW</row>
+        <row>WEXHBEBEWW</row>
+        <row>WWWWWWWWWW</row>
+        <row>WWWWWWWWWW</row>
+
+        <row>WWWWWWWWWW</row>
+        <row>WWWWWWWWWW</row>
+        <row>WWWWWWWWWW</row>
+        <row>WWWWWWWWWW</row>
+        <row>WWWWWWWWWW</row>
+    </level>
 </levelpack>

@@ -16,6 +16,8 @@ class ImgButton(Button):
         if img == 'None':
             raise ValueError('path to img can not be null')
         self.surf = pygame.image.load(img)
+        if self.size == (0, 0):
+            self.size = self.surf.get_size()
         if hover_img != 'None':
             self.canHover = True
             self.hoverSurf = pygame.image.load(hover_img)
@@ -79,9 +81,15 @@ class TextButton(Button):
         size = (int(xml_obj.attrib["width"]), int(xml_obj.attrib["height"]))
         name = xml_obj.attrib["name"]
         bck_grnd = xml_obj.attrib["background"]
-        font = xml_obj.attrib["font"]
-        font_size = int(xml_obj.attrib["font-size"])
-        color = xml_obj.attrib["color"]
+        font = "fonts/OpenSans-Regular.ttf"
+        if "font" in xml_obj.attrib:
+            font = xml_obj.attrib["font"]
+        font_size = 16
+        if "font-size" in xml_obj.attrib:
+            font_size = int(xml_obj.attrib["font-size"])
+        color = 'black'
+        if 'color' in xml_obj.attrib:
+            color = xml_obj.attrib["color"]
         text = xml_obj.text
         hover_background, hover_color = "None", "None"
         if "hover-background" in xml_obj.attrib:
@@ -143,7 +151,7 @@ def parseScene(scene_name):
                 raise ValueError('Text have wrong type')
     for o in objs:
         o.rect = pygame.rect.Rect((o.pos, o.size))
-    return objs
+    return {obj.name:obj for obj in objs}
 
 
 

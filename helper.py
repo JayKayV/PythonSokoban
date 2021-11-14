@@ -7,7 +7,9 @@ color = {
     'blue': (0, 0, 255),
     'light_blue': (0, 255, 255),
     'yellow': (255, 255, 0),
-    'black': (0, 0, 0)
+    'black': (0, 0, 0),
+    'magenta': (255, 0, 255),
+    'gray': (80, 80, 80)
 }
 
 def StringAssign(s, i, c):
@@ -45,3 +47,6 @@ def updateKeyData(action, key):
     root = et.parse(filename).getroot()
     o = root.find('/.[@action=\'{}\']'.format(action))
     o.text = key
+
+def centralize(x, y):
+    return (10 - x) // 2, (10 - y) // 2
