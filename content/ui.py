@@ -1,8 +1,9 @@
-import pygame, helper
-from helper import color as hc
+import pygame
+from content import helper
+from content.helper import color as hc
 import xml.etree.ElementTree as et
 pygame.init()
-from uiBase import Button, UiObj
+from content.uiBase import Button, UiObj
 
 """
 ImgButton can also implement as StaticImg (i.e just leave hover_img = 'None'
@@ -81,7 +82,7 @@ class TextButton(Button):
         size = (int(xml_obj.attrib["width"]), int(xml_obj.attrib["height"]))
         name = xml_obj.attrib["name"]
         bck_grnd = xml_obj.attrib["background"]
-        font = "fonts/OpenSans-Regular.ttf"
+        font = "content/fonts/OpenSans-Regular.ttf"
         if "font" in xml_obj.attrib:
             font = xml_obj.attrib["font"]
         font_size = 16
@@ -108,15 +109,39 @@ class UpdateableText(TextButton):
         self.var_text = var_text
 
         text = self.static_text.format(self.var_text)
+        self.surf.fill((0, 0, 0))
         self.textimg = self.gamefont.render(text, 1, self.color)
         self.surf.blit(self.textimg, self.textpos)
 
     def update(self, new_value):
-        self.set(self, self.static_text, new_value)
+        self.set(self.static_text, new_value)
+
+    @staticmethod
+    def loadFromXml(xml_obj):
+        pos = (int(xml_obj.attrib["x"]), int(xml_obj.attrib["y"]))
+        size = (int(xml_obj.attrib["width"]), int(xml_obj.attrib["height"]))
+        name = xml_obj.attrib["name"]
+        bck_grnd = xml_obj.attrib["background"]
+        font = "content/fonts/OpenSans-Regular.ttf"
+        if "font" in xml_obj.attrib:
+            font = xml_obj.attrib["font"]
+        font_size = 16
+        if "font-size" in xml_obj.attrib:
+            font_size = int(xml_obj.attrib["font-size"])
+        color = 'black'
+        if 'color' in xml_obj.attrib:
+            color = xml_obj.attrib["color"]
+        text = xml_obj.text
+        hover_background, hover_color = "None", "None"
+        if "hover-background" in xml_obj.attrib:
+            hover_background = xml_obj.attrib["hover-background"]
+        if "hover-text" in xml_obj.attrib:
+            hover_color = xml_obj.attrib["hover-text"]
+        return UpdateableText(pos, size, name, bck_grnd, font, font_size, color, text, hover_background, hover_color)
 
 class KeyInput(UiObj):
     isActive = False
-    xml_path = 'config/keys.xml'
+    xml_path = 'content/config/keys.xml'
     def __init__(self, static_obj, update_obj):
         self.static_obj = static_obj
         self.update_obj = update_obj
@@ -128,7 +153,7 @@ class KeyInput(UiObj):
         return KeyInput(static, update)
 
 def parseScene(scene_name):
-    xml_path = 'config/ui.xml'
+    xml_path = 'content/config/ui.xml'
     root = et.parse(xml_path).getroot()
     scene = root.find('./scene[@name=\'{}\']'.format(scene_name))
     if scene is None:

@@ -1,8 +1,7 @@
-import pygame, helper
-from scene import Scene
-from level import Level
-from uiBase import Layer
-from ui import *
+from content.scene import Scene
+from content.level import Level
+from content.uiBase import Layer
+from content.ui import *
 from datetime import timedelta, datetime
 pygame.init()
 
@@ -34,20 +33,28 @@ class GameLayer(Layer):
         self.direction = [1, 0]
         self.gameOver = False
         self.moves = 0
+        pfx = 'content/sprites/'
         self.sprites = {
-            'P': {'up': pygame.image.load('sprites/up.png').convert_alpha(),
-                  'down': pygame.image.load('sprites/down.png').convert_alpha(),
-                  'left': pygame.image.load('sprites/left.png').convert_alpha(),
-                  'right': pygame.image.load('sprites/right.png').convert_alpha()
+            'P': {'up': pygame.image.load(pfx+'up.png').convert_alpha(),
+                  'down': pygame.image.load(pfx+'down.png').convert_alpha(),
+                  'left': pygame.image.load(pfx+'left.png').convert_alpha(),
+                  'right': pygame.image.load(pfx+'right.png').convert_alpha()
                   },
-            'B': pygame.image.load('sprites/box_0.png').convert_alpha(),
-            'W': pygame.image.load('sprites/wall.png').convert_alpha(),
-            'X': pygame.image.load('sprites/point.png').convert_alpha(),
-            'activated_box': pygame.image.load('sprites/box_1.png').convert_alpha(),
-            'H': pygame.image.load('sprites/hole.png').convert_alpha(),
-            'E': pygame.image.load('sprites/space.png').convert_alpha()
+            'B': pygame.image.load(pfx+'box_0.png').convert_alpha(),
+            'W': pygame.image.load(pfx+'wall.png').convert_alpha(),
+            'X': pygame.image.load(pfx+'point.png').convert_alpha(),
+            'activated_box': pygame.image.load(pfx+'box_1.png').convert_alpha(),
+            'H': pygame.image.load(pfx+'hole.png').convert_alpha(),
+            'E': pygame.image.load(pfx+'space.png').convert_alpha()
         }
 
+        pfx = 'content/audio/'
+        self.sounds = {
+            'footstep': pygame.mixer.Sound(pfx+'footstep.ogg'),
+            'retrace': pygame.mixer.Sound(pfx+'footstep_retrace.ogg'),
+            'game-over': pygame.mixer.Sound(pfx+'game_over.ogg')
+        }
+        self.channel = pygame.mixer.Channel(1)
         #load game logic data
         self.levelmap = levelmap.split('*')
         self.lvl_height, self.lvl_width = len(self.levelmap), len(self.levelmap[0])
@@ -103,6 +110,7 @@ class GameLayer(Layer):
 
                     updated = True
                     self.moves = 0
+                    self.ui.update({'moves': 0, 'win': False})
             elif action == "undo" and not updated:
 
                 now = datetime.now()
@@ -118,6 +126,8 @@ class GameLayer(Layer):
 
                     updated = True
                     self.moves -= 1
+                    self.ui.update({'moves': self.moves})
+                    self.channel.play(self.sounds['retrace'])
             else:
                 now = datetime.now()
                 dt = now - self.oldtime
@@ -176,8 +186,10 @@ class GameLayer(Layer):
                         self.moves += 1
                         self.ui.update({'moves': self.moves})
                         if self.gameOver:
+                            self.channel.play(self.sounds['game-over'])
                             self.ui.update({'win': True})
-                            print('Winning!')
+                    if not self.gameOver:
+                        self.channel.play(self.sounds['footstep'])
 
         if mapupdated:
             self.gameStates.append(self.levelmap.copy())
@@ -217,7 +229,8 @@ class UiLayer(Layer):
     def load(self):
         self.ui = parseScene('game')
         self.updateTable = {'moves': 0, 'win': False}
-        print(self.ui)
+        #print(self.ui)
+        self.ui['moves-text'].set('MOVES: {}', 0)
 
     def setGame(self, gameUi):
         self.game = gameUi
@@ -230,6 +243,8 @@ class UiLayer(Layer):
         elif isinstance(action, dict):
             for o in action:
                 self.updateTable[o] = action[o]
+                if o == 'moves':
+                    self.ui['moves-text'].update(action[o])
                 #must guarantee that action contain the same key as in updateTable
 
     def blit(self, surf):
@@ -275,14 +290,14 @@ class gameScene(Scene):
                     self.leveldata, self.levelmap = Level.autoload(self.leveluri, str(self.levelid))
                     self.gameLayer.load(self.levelmap)
 
-                    self.uiLayer.update({'moves:': 0, 'win': False})
+                    self.uiLayer.update({'moves': 0, 'win': False})
             if codename == 'next-level':
                 if self.levelid < int(self.leveldata['size']):
                     self.levelid += 1
                     self.leveldata, self.levelmap = Level.autoload(self.leveluri, str(self.levelid))
                     self.gameLayer.load(self.levelmap)
 
-                    self.uiLayer.update({'moves:': 0, 'win': False})
+                    self.uiLayer.update({'moves': 0, 'win': False})
 
 
         """

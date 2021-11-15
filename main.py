@@ -1,4 +1,6 @@
-import pygame, game, sys
+import pygame, sys
+from content import game
+
 pygame.init()
 
 scr_size = (1280, 720)
@@ -6,7 +8,7 @@ screen = pygame.display.set_mode(scr_size)
 
 pygame.display.set_caption('Sokoban')
 
-current_scene = game.gameScene('levels/example_level.xml', '3', scr_size)
+current_scene = game.gameScene('content/levels/example_level.xml', '3', scr_size)
 
 while True:
     mouseInput = None

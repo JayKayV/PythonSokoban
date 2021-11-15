@@ -16,7 +16,7 @@ def StringAssign(s, i, c):
     return s[:i] + c + s[i+1:]
 
 def readKeyData():
-    filename = 'config/keys.xml'
+    filename = 'content/config/keys.xml'
 
     root = et.parse(filename).getroot()
     return {o.attrib['action']:o.text for o in root.findall('key')}
@@ -42,7 +42,7 @@ def aligncenter(size1, size2):
     return (size1[0] - size2[0]) // 2, (size1[1] - size2[1]) // 2
 
 def updateKeyData(action, key):
-    filename = 'config/keys.xml'
+    filename = 'content/config/keys.xml'
 
     root = et.parse(filename).getroot()
     o = root.find('/.[@action=\'{}\']'.format(action))

@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as et
 import pygame
-from ui import TextButton
+from content.ui import TextButton
 pygame.init()
 
 pygame.display.set_caption('test')

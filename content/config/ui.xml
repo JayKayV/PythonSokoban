@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ui>
     <scene name="game">
+        <text background="None" name="moves-text" x="150" y="25" font-size="20" color="white"
+        type="updateable" width="0" height="0">Default
+        </text>
         <text background="None" name="win-text" x="330" y="25" font-size="25" color="yellow"
         type="static" width="0" height="0">You Win!
         </text>
         <button width="0" height="0" x="25" y="25" name="prev-level"
-                type="img" src="sprites/sliderLeft.png" hover-src="sprites/red_sliderLeft.png">
+                type="img" src="content/sprites/sliderLeft.png" hover-src="content/sprites/red_sliderLeft.png">
         </button>
 
         <button width="0" height="0" x="700" y="25" name="next-level"
-                type="img" src="sprites/sliderRight.png" hover-src="sprites/red_sliderRight.png">
+                type="img" src="content/sprites/sliderRight.png" hover-src="content/sprites/red_sliderRight.png">
         </button>
     </scene>
 </ui>
