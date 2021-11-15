@@ -20,9 +20,11 @@ class Level:
         levelmap = '*'.join([o.text for o in self.root.findall('row')])
         return self.leveldata, levelmap
 
-    def autoload(self, lvl_uri, lvl_id):
-        self.parse(lvl_uri, lvl_id)
-        return self.load()
+    @staticmethod
+    def autoload(lvl_uri, lvl_id):
+        lvl = Level()
+        lvl.parse(lvl_uri, lvl_id)
+        return lvl.load()
 
     def fromXmlString(self, arg):
         if not isinstance(arg, str):

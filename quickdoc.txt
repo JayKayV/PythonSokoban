@@ -1,10 +1,11 @@
 ; Basic
 P = Player
-X = box spot
+X = box spot (without the box is on)
 B = Box
 E = Empty space (that can be moving within)
 W = Wall
 e = empty space outside playground
+x = box already on X spot when initiated
 
 ; Teleport variant
 T = Teleport

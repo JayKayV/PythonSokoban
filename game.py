@@ -27,16 +27,13 @@ class GameLayer(Layer):
     otherScenes = None
     ui = None
 
-    def __init__(self, scr_size):
-        super().__init__(scr_size)
-        self.direction = [1, 0]
-        self.gameOver = False
-        self.moves = 0
-
     def setUi(self, gameUi):
         self.ui = gameUi
 
     def load(self, levelmap):
+        self.direction = [1, 0]
+        self.gameOver = False
+        self.moves = 0
         self.sprites = {
             'P': {'up': pygame.image.load('sprites/up.png').convert_alpha(),
                   'down': pygame.image.load('sprites/down.png').convert_alpha(),
@@ -61,10 +58,14 @@ class GameLayer(Layer):
         self.xpos = []
         for i in range(len(self.levelmap)):
             for j in range(len(self.levelmap[i])):
-                if self.levelmap[i][j] == 'X':
+                if self.levelmap[i][j] in ['x', 'X']:
                     self.xpos.append((i, j))
+                    if self.levelmap[i][j] == 'x':
+                        helper.assign_lvlmap(self.levelmap, (i, j), 'B')
+                        self.org_map = self.levelmap.copy()
                 elif self.levelmap[i][j] == 'P':
                     self.player_pos = [i, j]
+        self.gameStates[0] = self.levelmap.copy()
 
     def find_player(self):
         for i in range(len(self.levelmap)):
@@ -194,7 +195,7 @@ class GameLayer(Layer):
         for row in self.levelmap:
             j = 0
             for o in row:
-                pos = (64 * j + 60 + left * 64, 64 * i + 60 + top * 64)
+                pos = (64 * j + 60 + left * 64, 64 * i + 60 + top * 32)
                 if o != 'B' and o != 'e':
                     if o == 'P':
                         surf.blit(self.sprites['E'], pos)
@@ -202,7 +203,7 @@ class GameLayer(Layer):
                     else:
                         surf.blit(self.sprites[o], pos)
                 elif o == 'B':
-                    if helper.get_pos_data(self.org_map, [i, j]) == 'X':
+                    if (i, j) in self.xpos:
                         surf.blit(self.sprites['activated_box'], pos)
                     else:
                         surf.blit(self.sprites[o], pos)
@@ -223,8 +224,9 @@ class UiLayer(Layer):
 
     def update(self, action):
         if isinstance(action, tuple):
-            for o in self.ui:
-                    o.onclick(action, sendAction, self.game, o.name)
+            for o in self.ui.values():
+                if o.collide(action):
+                    return o.name
         elif isinstance(action, dict):
             for o in action:
                 self.updateTable[o] = action[o]
@@ -242,6 +244,7 @@ class gameScene(Scene):
     def __init__(self, leveluri, levelid, screensize):
         super().__init__()
         level = Level()
+        self.leveluri, self.levelid = leveluri, int(levelid)
         self.leveldata, self.levelmap = level.autoload(leveluri, levelid)
         self.gameLayer = GameLayer(screensize)
         self.gameLayer.load(self.levelmap)
@@ -264,6 +267,23 @@ class gameScene(Scene):
             self.lvlmap = self.gameLayer.update(update_keys)
             if self.lvlmap is None:
                 raise ValueError('lvlmap is null')
+        if mouse_input != None:
+            codename = self.uiLayer.update(mouse_input)
+            if codename == 'prev-level':
+                if self.levelid > 1:
+                    self.levelid -= 1
+                    self.leveldata, self.levelmap = Level.autoload(self.leveluri, str(self.levelid))
+                    self.gameLayer.load(self.levelmap)
+
+                    self.uiLayer.update({'moves:': 0, 'win': False})
+            if codename == 'next-level':
+                if self.levelid < int(self.leveldata['size']):
+                    self.levelid += 1
+                    self.leveldata, self.levelmap = Level.autoload(self.leveluri, str(self.levelid))
+                    self.gameLayer.load(self.levelmap)
+
+                    self.uiLayer.update({'moves:': 0, 'win': False})
+
 
         """
         if mouse_input == pygame.MOUSEBUTTONUP or pygame.MOUSEBUTTONDOWN:
@@ -281,5 +301,6 @@ def sendAction(*args):
         if not isinstance(args[1], str):
             raise TypeError('second argument have to specify action')
         args[0].update(args[1])
+
 
 

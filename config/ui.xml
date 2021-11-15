@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ui>
     <scene name="game">
-        <text background="None" name="win-text" x="370" y="25" font-size="25" color="yellow"
+        <text background="None" name="win-text" x="330" y="25" font-size="25" color="yellow"
         type="static" width="0" height="0">You Win!
         </text>
         <button width="0" height="0" x="25" y="25" name="prev-level"

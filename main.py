@@ -6,7 +6,7 @@ screen = pygame.display.set_mode(scr_size)
 
 pygame.display.set_caption('Sokoban')
 
-current_scene = game.gameScene('levels/example_level.xml', '-5', scr_size)
+current_scene = game.gameScene('levels/example_level.xml', '3', scr_size)
 
 while True:
     mouseInput = None
@@ -14,6 +14,8 @@ while True:
         if ev.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        elif ev.type == pygame.MOUSEBUTTONUP:
+            mouseInput = pygame.mouse.get_pos()
 
     keys = pygame.key.get_pressed()
     current_scene.update(keys, mouseInput)
