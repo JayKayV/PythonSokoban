@@ -43,7 +43,6 @@ class Layer:
     def blit(self, surf=None):
         return "pls update this!"
 
-
 class Button(UiObj):
     canHover = False
     surf = None

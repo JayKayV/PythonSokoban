@@ -1,6 +1,6 @@
-from content.scene import Scene
+from content.scene import Scene, Layer
 from content.level import Level
-from content.uiBase import Layer
+import content.menu as menu
 from content.ui import *
 from datetime import timedelta, datetime
 pygame.init()
@@ -25,6 +25,10 @@ class GameLayer(Layer):
     directionStates = []
     otherScenes = None
     ui = None
+
+    def __init__(self, scr_size):
+        super().__init__(scr_size)
+        self.oldtime = datetime.now()
 
     def setUi(self, gameUi):
         self.ui = gameUi
@@ -207,7 +211,7 @@ class GameLayer(Layer):
         for row in self.levelmap:
             j = 0
             for o in row:
-                pos = (64 * j + 60 + left * 64, 64 * i + 60 + top * 32)
+                pos = (64 * j + 60 + left * 64, 64 * i + 80 + top * 32)
                 if o != 'B' and o != 'e':
                     if o == 'P':
                         surf.blit(self.sprites['E'], pos)
@@ -258,6 +262,7 @@ class UiLayer(Layer):
 class gameScene(Scene):
     def __init__(self, leveluri, levelid, screensize):
         super().__init__()
+        self.screensize = screensize
         level = Level()
         self.leveluri, self.levelid = leveluri, int(levelid)
         self.leveldata, self.levelmap = level.autoload(leveluri, levelid)
@@ -278,6 +283,10 @@ class gameScene(Scene):
             for key in self.game_keys:
                 if key_input[key]:
                     update_keys.append(self.game_keys[key])
+
+            if 'back' in update_keys:
+                self.change(menu.MenuScene(self.screensize))
+                return 'None'
 
             self.lvlmap = self.gameLayer.update(update_keys)
             if self.lvlmap is None:

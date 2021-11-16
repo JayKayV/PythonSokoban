@@ -3,7 +3,7 @@
     <key action="right">d</key>
     <key action="down">s</key>
     <key action="up">w</key>
-    <key action="pause">escape</key>
+    <key action="back">escape</key>
     <key action="undo">z</key>
     <key action="reset">r</key>
 </keys>

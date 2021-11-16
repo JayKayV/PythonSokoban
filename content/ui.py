@@ -29,7 +29,9 @@ class ImgButton(Button):
         size = (int(xml_obj.attrib["width"]), int(xml_obj.attrib["height"]))
         name = xml_obj.attrib["name"]
         path_to_img = xml_obj.attrib["src"]
-        path_to_hover_img = xml_obj.attrib["hover-src"]
+        path_to_hover_img = 'None'
+        if 'hover-src' in xml_obj.attrib:
+            path_to_hover_img = xml_obj.attrib["hover-src"]
         return ImgButton(pos, size, name, path_to_img, path_to_hover_img)
 
 class TextButton(Button):

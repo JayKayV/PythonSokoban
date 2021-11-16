@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<levelpack author="nhom 10" size="5" description="Made by nhom 10 python">
-    <level id="1" width= "6" height= "7" best-moves="None">
+<levelpack author="nhom 10" size="11" description="Made by nhom 10 python">
+    <level id="1" width= "6" height="7" best-moves="None">
         <row>WWWWee</row>
         <row>WEXWee</row>
         <row>WEEWWW</row>
@@ -10,7 +10,7 @@
         <row>WWWWee</row>
     </level>
 
-    <level id="2" width="6" height="7">
+    <level id="2" width="6" height="7" best-moves="None">
         <row>WWWWWW</row>
         <row>WEEEEW</row>
         <row>WEWPEW</row>
@@ -20,7 +20,7 @@
         <row>WWWWWW</row>
     </level>
 
-    <level id="3" width="9" height="6">
+    <level id="3" width="9" height="6" best-moves="None">
         <row>WWWWWWWWW</row>
         <row>WPEEEEEEW</row>
         <row>WEBExEEXW</row>
@@ -29,7 +29,7 @@
         <row>WWWWWWWWW</row>
     </level>
 
-    <level id="4" width="8" height="7">
+    <level id="4" width="8" height="7" best-moves="None">
         <row>eWWWWWWW</row>
         <row>eWEEEEEW</row>
         <row>eWEXBXEW</row>
@@ -39,10 +39,73 @@
         <row>WWWWWWWW</row>
     </level>
 
-    <level id="5" width="10" height="4">
+    <level id="5" width="10" height="4" best-moves="None">
         <row>WWWWWWWWWW</row>
         <row>WPEEEEEEWW</row>
         <row>WEXHBEBEWW</row>
         <row>WWWWWWWWWW</row>
+    </level>
+
+    <level id="6" width="7" height="4" best-moves="None">
+        <row>WWWWWe</row>
+        <row>WXEEEW</row>
+        <row>WPBBEW</row>
+        <row>WWEEEW</row>
+        <row>eWWEEW</row>
+        <row>eeWWXW</row>
+        <row>eeeWWW</row>
+    </level>
+
+    <level id="7" width="7" height="9" best-moves="None">
+        <row>WWWWeee</row>
+        <row>WXEWWee</row>
+        <row>WXPEWee</row>
+        <row>WXEBWee</row>
+        <row>WWBEWWW</row>
+        <row>eWEBEEW</row>
+        <row>eWEEEEW</row>
+        <row>eWEEWWW</row>
+        <row>eWWWWee</row>
+    </level>
+
+    <level id = "8" width="9" height="8" best-moves="None">
+        <row>WWWWWeeee</row>
+        <row>WEEEWWeee</row>
+        <row>WEBEEWeee</row>
+        <row>WWEBEWWWW</row>
+        <row>eWWWPXEEW</row>
+        <row>eeWEEXWEW</row>
+        <row>eeWEEEEEW</row>
+        <row>eeWWWWWWW</row>
+    </level>
+
+    <level id = "9" width="7" height="6" best-moves="None">
+        <row>WWWWeee</row>
+        <row>WEEWWWW</row>
+        <row>WEXEXEW</row>
+        <row>WEBBWPW</row>
+        <row>WWEEEEW</row>
+        <row>eWWWWWW</row>
+    </level>
+
+    <level id="10" width="8" height="8" best-moves="None">
+        <row>WWWWWWWW</row>
+        <row>WEEEXXEW</row>
+        <row>WEEPBBEW</row>
+        <row>WWWWWEWW</row>
+        <row>eeeWEEWe</row>
+        <row>eeeWEEWe</row>
+        <row>eeeWEEWe</row>
+        <row>eeeWWWWe</row>
+    </level>
+
+    <level id="11" width="7" height="7" best-moves="None">
+        <row>WWWWWWe</row>
+        <row>WEEEXWe</row>
+        <row>WEWWEWW</row>
+        <row>WEEBBPW</row>
+        <row>WEWEEEW</row>
+        <row>WXEEWWW</row>
+        <row>WWWWWee</row>
     </level>
 </levelpack>

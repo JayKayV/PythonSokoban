@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ui>
     <scene name="game">
-        <text background="None" name="moves-text" x="150" y="25" font-size="20" color="white"
+        <text background="None" name="moves-text" x="150" y="45" font-size="20" color="white"
         type="updateable" width="0" height="0">Default
         </text>
-        <text background="None" name="win-text" x="330" y="25" font-size="25" color="yellow"
+        <text background="None" name="tutorial-text" x="160" y="5" font-size="16" color="white"
+        type="static" width="0" height="0">WASD to move, Z to undo, R to reset, Escape to getback to menu
+        </text>
+        <text background="None" name="win-text" x="330" y="45" font-size="25" color="yellow"
         type="static" width="0" height="0">You Win!
         </text>
-        <button width="0" height="0" x="25" y="25" name="prev-level"
+        <button width="0" height="0" x="25" y="45" name="prev-level"
                 type="img" src="content/sprites/sliderLeft.png" hover-src="content/sprites/red_sliderLeft.png">
         </button>
 
-        <button width="0" height="0" x="700" y="25" name="next-level"
+        <button width="0" height="0" x="700" y="45" name="next-level"
                 type="img" src="content/sprites/sliderRight.png" hover-src="content/sprites/red_sliderRight.png">
         </button>
+    </scene>
+    <scene name="menu">
+        <button width="0" height="0" x="90" y="105" name="box_img"
+                type="img" src="content/sprites/box_0.png">
+        </button>
+        <button width="0" height="0" x="150" y="105" name="img"
+                type="img" src="content/sprites/left.png">
+        </button>
+        <text background="None" name="introduction-text" x="230" y="105" font-size="25" color="yellow"
+              type="static" width="0" height="0">PythonSokoban by Nhom10</text>
+        <text background="None" name="select-menu-text" x="230" y="225" font-size="25" color="white"
+              type="static" width="0" height="0">Select level to play the game!</text>
     </scene>
 </ui>
