@@ -24,25 +24,6 @@ class UiObj:
     def loadFromXml(xml_obj):
         return "pls update this!"
 
-class Layer:
-    def __init__(self, scr_size):
-        if not isinstance(scr_size, tuple):
-            raise ValueError('Must initiaze scr_size')
-        elif not (isinstance(scr_size[0], int) and isinstance(scr_size[1], int)):
-            raise TypeError('Tuple must contain int type')
-
-        self.screensize = scr_size
-        self.oldtime = datetime.now()
-
-    def load(self):
-        return "pls update this!"
-
-    def update(self, actions):
-        return "pls update this!"
-
-    def blit(self, surf=None):
-        return "pls update this!"
-
 class Button(UiObj):
     canHover = False
     surf = None
